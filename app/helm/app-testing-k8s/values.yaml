@@ -1,0 +1,57 @@
+replicaCount: 1
+
+image:
+  repository: albertf2020/app-testing-k8s
+  tag: 1.0.0
+  pullPolicy: Always
+
+nameOverride: ""
+fullnameOverride: ""
+
+podLabels:
+  dynamic-resources: "true"
+
+# Environment variables 
+env:
+  MEMORY_INCREMENT_MB: "10"  # Memory consumption increment in MB per second
+
+service:
+  type: LoadBalancer
+  port: 5000
+  targetPort: 5000
+  annotations:
+    service.beta.kubernetes.io/external-traffic: "Local"
+  externalTrafficPolicy: "Local"
+  #loadBalancerIP: 192.168.88.206
+  # labels:
+  #   app.kubernetes.io/component: backend
+  #   environment: production
+
+resources:
+  limits:
+    cpu: 3
+    memory: 8Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+# Добавляем стратегию перезапуска
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
+
+# Добавляем настройки автомасштабирования
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {} 
